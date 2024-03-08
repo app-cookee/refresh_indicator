@@ -1,8 +1,8 @@
 library liquid_pull_to_refresh;
 
 import 'dart:async';
-import 'dart:math';
 import 'dart:math' as math;
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/src/circular_progress.dart';
@@ -55,6 +55,8 @@ class LiquidPullToRefresh extends StatefulWidget {
     this.springAnimationDurationInMilliseconds = 1000,
     this.borderWidth = 2.0,
     this.showChildOpacityTransition = true,
+    this.innerCircleHeight = 10,
+    this.outerCircleHeight = 1.5,
   })  : assert(animSpeedFactor >= 1.0),
         super(key: key);
 
@@ -71,6 +73,10 @@ class LiquidPullToRefresh extends StatefulWidget {
   ///
   /// default is set to 100.0
   final double? height;
+
+  final num? innerCircleHeight;
+
+  final num? outerCircleHeight;
 
   /// Duration in milliseconds of springy effect that occurs when
   /// we leave dragging after full drag.
@@ -561,9 +567,15 @@ class LiquidPullToRefreshState extends State<LiquidPullToRefresh>
 
     // checking whether to take default values or not
     Color color = (widget.color != null) ? widget.color! : _defaultColor;
-    Color backgroundColor = (widget.backgroundColor != null)
-        ? widget.backgroundColor!
-        : _defaultBackgroundColor;
+    Color backgroundColor =
+        // LinearGradient  (
+        //   colors: [Colors.yellow, Colors.blue],
+        //   begin: Alignment.topCenter,
+        //   end: Alignment.bottomCenter
+        // );
+        (widget.backgroundColor != null)
+            ? widget.backgroundColor!
+            : _defaultBackgroundColor;
     double height = (widget.height != null) ? widget.height! : _defaultHeight;
 
     final Widget child = NotificationListener<ScrollNotification>(
@@ -625,8 +637,15 @@ class LiquidPullToRefreshState extends State<LiquidPullToRefresh>
                     : 0.0,
               ),
               child: Container(
-                height: _value.value * height * 2, // 100.0
-                color: color,
+                height: _value.value * height * 2, //
+                // 100.0
+                //  color: color,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      colors: [Color(0xFFFFDCE9), Color(0XFFD9F1FD)],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight),
+                ),
               ),
             );
           },
@@ -657,7 +676,7 @@ class LiquidPullToRefreshState extends State<LiquidPullToRefresh>
                     backgroundColor: backgroundColor,
                     progressCircleOpacity: _ringOpacityAnimation.value,
                     innerCircleRadius: height *
-                        15 /
+                        widget.innerCircleHeight! /
                         100 * // 15.0
                         ((_mode != _LiquidPullToRefreshMode.done)
                             ? _indicatorRadiusWithPeakAnimation.value
@@ -665,7 +684,8 @@ class LiquidPullToRefreshState extends State<LiquidPullToRefresh>
                     progressCircleBorderWidth: widget.borderWidth,
                     //2.0
                     progressCircleRadius: (_ringOpacityAnimation.value != 0.0)
-                        ? (height * 2 / 10) * _ringRadiusAnimation.value //20.0
+                        ? (height * widget.outerCircleHeight! / 10) *
+                            _ringRadiusAnimation.value //20.0
                         : 0.0,
                     startAngle: _progressingStartAngleAnimation.value * pi,
                     progressPercent: _progressingPercentAnimation.value,

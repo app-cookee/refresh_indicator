@@ -45,10 +45,19 @@ class _CircularProgressState extends State<CircularProgress> {
               width: widget.progressCircleRadius * 2,
               child: CustomPaint(
                 painter: RingPainter(
-                  startAngle: widget.startAngle,
-                  paintWidth: widget.progressCircleBorderWidth,
-                  progressPercent: widget.progressPercent,
-                  trackColor: widget.backgroundColor,
+                    startAngle: widget.startAngle,
+                    paintWidth: widget.progressCircleBorderWidth,
+                    progressPercent: widget.progressPercent,
+                    //trackColor: Colors.red,
+                    gradient: LinearGradient(
+                      colors: [
+                        //  Colors.black,Colors.white
+                        Color(0xFF4438C1), Color(0xFFFF0063)
+                      ],
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                    )
+                  // trackColor: widget.backgroundColor,
                 ),
               ),
             ),
@@ -59,8 +68,17 @@ class _CircularProgressState extends State<CircularProgress> {
               width: widget.innerCircleRadius * 2,
               height: widget.innerCircleRadius * 2,
               decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: widget.backgroundColor,
+                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [
+                      Color(0xFF4438C1), Color(0xFFFF0063)
+
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  )
+
+                // color: widget.backgroundColor,
               ),
             ),
           )
@@ -86,20 +104,28 @@ class _CircularProgressIndicatorState extends State<CircularProgressIndicator> {
 class RingPainter extends CustomPainter {
   final double paintWidth;
   final Paint trackPaint;
-  final Color trackColor;
+  // final Color trackColor;
   final double progressPercent;
   final double startAngle;
+  final Gradient gradient;
 
   RingPainter({
     required this.startAngle,
     required this.paintWidth,
     required this.progressPercent,
-    required this.trackColor,
+    // required this.trackColor,
+    required this.gradient,
   }) : trackPaint = Paint()
-          ..color = trackColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = paintWidth
-          ..strokeCap = StrokeCap.square;
+  // ..color = trackColor
+    ..shader = gradient.createShader(
+      Rect.fromCircle(
+        center: Offset.zero,
+        radius: paintWidth,
+      ),
+    )
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = paintWidth
+    ..strokeCap = StrokeCap.square;
 
   @override
   void paint(Canvas canvas, Size size) {
